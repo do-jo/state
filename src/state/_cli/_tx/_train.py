@@ -1,5 +1,5 @@
 import argparse as ap
-
+import importlib
 from omegaconf import DictConfig, OmegaConf
 
 
@@ -261,6 +261,15 @@ def run_tx_train(cfg: DictConfig):
         trainer_kwargs["max_epochs"] = 1  # do exactly one epoch
         # delete max_steps to avoid conflicts
         del trainer_kwargs["max_steps"]
+
+    # Extra callbacks hook
+    if "EXTRA_CALLBACKS" in os.environ:
+        for cb_path in os.environ["EXTRA_CALLBACKS"].split(","):
+            module_name, class_name = cb_path.rsplit(".", 1)
+            mod = importlib.import_module(module_name)
+            cls = getattr(mod, class_name)
+            instance = cls(bucket_name="state_model", model_name=cfg["name"])
+            callbacks.append(instance)  # append directly to trainer callbacks
 
     # Build trainer
     print(f"Building trainer with kwargs: {trainer_kwargs}")
