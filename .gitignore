@@ -9,3 +9,4 @@ uv.lock
 tmp/
 notebooks/
 *.sif
+wandb/
