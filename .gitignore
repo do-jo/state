@@ -11,5 +11,6 @@ notebooks/
 *.sif
 *.slurm
 temp
-wandb/
-
+wandb/*
+!wandb/*.yaml
+*.DS_Store
